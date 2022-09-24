@@ -26,7 +26,7 @@ export class Standard {
   }
 }
 
-enum LetterGrade {
+export enum LetterGrade {
   APlus = "A+",
   A = "A",
   AMinus = "A-",
@@ -42,7 +42,24 @@ enum LetterGrade {
   F = "F",
 }
 
-const gradeCutoffs = [
+export const calculateGradeAverage = (standards: Standard[]) => {
+  if (standards.length < 1) return null;
+  const averages = standards.map(standard => standard.summativeAverage());
+
+  return averages.reduce((a, b) => a + b) / averages.length;
+};
+
+export const calculateLetterGrade = (standards: Standard[]) => {
+  const average = calculateGradeAverage(standards);
+  if (average === null) return LetterGrade.F;
+
+  for (const { cutoff, grade } of gradeCutoffs) {
+    if (average >= cutoff) return grade;
+  }
+  return LetterGrade.F;
+};
+
+export const gradeCutoffs = [
   { cutoff: 96.5, grade: LetterGrade.APlus },
   { cutoff: 92.5, grade: LetterGrade.A },
   { cutoff: 89.5, grade: LetterGrade.AMinus },
@@ -56,30 +73,3 @@ const gradeCutoffs = [
   { cutoff: 64.5, grade: LetterGrade.D },
   { cutoff: 0, grade: LetterGrade.F },
 ];
-
-export class Class {
-  name: string;
-  standards: Standard[];
-
-  constructor(name: string, standards: Standard[]) {
-    this.name = name;
-    this.standards = standards;
-  }
-
-  gradeAverage() {
-    const averages = this.standards.map(standard =>
-      standard.summativeAverage(),
-    );
-
-    return averages.reduce((a, b) => a + b) / averages.length;
-  }
-
-  letterGrade() {
-    const average = this.gradeAverage();
-
-    for (const { cutoff, grade } of gradeCutoffs) {
-      if (average >= cutoff) return grade;
-    }
-    return;
-  }
-}
