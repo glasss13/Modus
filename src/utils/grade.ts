@@ -24,7 +24,7 @@ export type SummativeGradeValueOnly = Prisma.SummativeGradeGetPayload<
   typeof summativeGradeValueOnly
 >;
 
-const getGradeValue = (grade: SummativeGradeValue) => {
+export const getGradeValue = (grade: SummativeGradeValue) => {
   switch (grade) {
     case "EE":
       return 100;
