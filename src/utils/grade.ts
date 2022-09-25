@@ -1,30 +1,62 @@
-export enum Grade {
-  EE = 100,
-  ME = 89.4,
-  AE = 76.4,
-  BE = 46.6,
-  NE = 0.9,
-}
+import { Prisma, SummativeGradeValue } from "@prisma/client";
 
-export class Standard {
-  grades: Grade[] = [];
-  name: string;
+const standardWithGrades = Prisma.validator<Prisma.StandardArgs>()({
+  select: {
+    summativeGrades: {
+      select: {
+        value: true,
+      },
+    },
+  },
+});
 
-  constructor(name: string, grades?: Grade[]) {
-    this.name = name;
-    if (grades) this.grades = grades;
+export type StandardWithGrades = Prisma.StandardGetPayload<
+  typeof standardWithGrades
+>;
+
+const summativeGradeValueOnly = Prisma.validator<Prisma.SummativeGradeArgs>()({
+  select: {
+    value: true,
+  },
+});
+
+export type SummativeGradeValueOnly = Prisma.SummativeGradeGetPayload<
+  typeof summativeGradeValueOnly
+>;
+
+const getGradeValue = (grade: SummativeGradeValue) => {
+  switch (grade) {
+    case "EE":
+      return 100;
+    case "ME":
+      return 89.4;
+    case "AE":
+      return 76.4;
+    case "BE":
+      return 46.6;
+    case "NE":
+      return 0.9;
+  }
+};
+
+const summativeAverage = (grades: SummativeGradeValueOnly[]) => {
+  const gradesValues = grades.map(grade => getGradeValue(grade.value));
+  const mid = Math.floor(gradesValues.length / 2);
+
+  const sorted = [...gradesValues].sort((a, b) => a - b);
+
+  const a = sorted[mid];
+  const b = sorted[mid - 1];
+  if (!a || !b) {
+    return null;
   }
 
-  summativeAverage() {
-    const mid = Math.floor(this.grades.length / 2);
-
-    const sorted = [...this.grades].sort((a, b) => a - b);
-
-    return this.grades.length % 2 !== 0
-      ? sorted[mid]!
-      : (sorted[mid - 1]! + sorted[mid]!) / 2;
+  if (gradesValues.length % 2 !== 0) {
+    return a;
+  } else {
+    return (a + b) / 2;
   }
-}
+};
 
 export enum LetterGrade {
   APlus = "A+",
@@ -42,16 +74,19 @@ export enum LetterGrade {
   F = "F",
 }
 
-export const calculateGradeAverage = (standards: Standard[]) => {
-  if (standards.length < 1) return null;
-  const averages = standards.map(standard => standard.summativeAverage());
+export const calculateGradeAverage = (standards: StandardWithGrades[]) => {
+  const averages = standards
+    .map(standard => summativeAverage(standard.summativeGrades))
+    .filter((avg): avg is number => avg !== null);
+
+  if (averages.length === 0) return null;
 
   return averages.reduce((a, b) => a + b) / averages.length;
 };
 
-export const calculateLetterGrade = (standards: Standard[]) => {
+export const calculateLetterGrade = (standards: StandardWithGrades[]) => {
   const average = calculateGradeAverage(standards);
-  if (average === null) return LetterGrade.F;
+  if (average === null) return null;
 
   for (const { cutoff, grade } of gradeCutoffs) {
     if (average >= cutoff) return grade;

@@ -11,33 +11,13 @@ import {
   Tooltip,
 } from "react-daisyui";
 import { AiOutlinePlus as PlusIcon } from "react-icons/ai";
-import { Grade, calculateLetterGrade, Standard } from "../utils/grade";
 import { trpc } from "../utils/trpc";
 import Modal from "../components/modal";
+import ClassCard from "../components/classCard";
 
 const Home: NextPage = () => {
-  // const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
+  const { data: classes } = trpc.useQuery(["class.getClasses"]);
 
-  const standard1 = new Standard("s1", [
-    Grade.EE,
-    Grade.EE,
-    Grade.EE,
-    Grade.EE,
-    Grade.EE,
-  ]);
-  const standard2 = new Standard("s2", [
-    Grade.ME,
-    Grade.ME,
-    Grade.ME,
-    Grade.ME,
-    Grade.EE,
-  ]);
-  const standard3 = new Standard("s3", [
-    Grade.AE,
-    Grade.AE,
-    Grade.EE,
-    Grade.EE,
-  ]);
   return (
     <>
       <Head>
@@ -49,36 +29,22 @@ const Home: NextPage = () => {
       <h1 className="text-center text-5xl md:text-[5rem] leading-normal font-extrabold">
         Modus Grade Calculator
       </h1>
-
       <main className="container flex flex-col min-h-screen mx-auto p-1 w-2/3 border border-gray-600 ">
-        <Class name="English" standards={[standard1, standard2, standard3]} />
-        <Class name="English" standards={[standard1, standard2, standard3]} />
+        {classes ? (
+          classes.map(class_ => (
+            <ClassCard
+              key={class_.id}
+              name={class_.name}
+              standards={class_.standards}
+            />
+          ))
+        ) : (
+          <p>loading...</p>
+        )}
+
         <CreateClass />
       </main>
-
-      {/* <Button>hi</Button>
-        <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
-          {hello.data ? <p>{hello.data.greeting}</p> : <p>Loading..</p>}
-        </div> */}
     </>
-  );
-};
-
-interface Props {
-  name: string;
-  standards: Standard[];
-}
-
-const Class = (props: Props) => {
-  const letterGrade = calculateLetterGrade(props.standards);
-
-  return (
-    <Card className="bg-base-200 rounded-xl border-gray-600 first:mt-0 mt-4">
-      <Card.Body>
-        <Card.Title>{props.name}</Card.Title>
-        <p>{letterGrade}</p>
-      </Card.Body>
-    </Card>
   );
 };
 
@@ -88,13 +54,42 @@ const CreateClass = () => {
   const [standards, setStandards] = useState<string[]>([]);
   const [createPressed, setCreatePressed] = useState(false);
 
+  const context = trpc.useContext();
+  const { mutate: makeClass } = trpc.useMutation(["class.makeClass"], {
+    onSuccess() {
+      context.invalidateQueries(["class.getClasses"]);
+    },
+  });
+
+  const resetState = () => {
+    setStandards([]);
+    setClassName("");
+    setShowDialog(false);
+    setCreatePressed(false);
+  };
+
   const onClickCreate = () => {
     setCreatePressed(true);
+
+    if (standards.some(name => name === "") || className === "") return;
+
+    makeClass({
+      name: className,
+      standards: standards.map(name => ({
+        name,
+        grades: [],
+      })),
+    });
+
+    resetState();
   };
 
   return (
     <>
-      <Modal open={showDialog} className="rounded-md">
+      <Modal
+        open={showDialog}
+        className="rounded-md"
+        onClickEscape={resetState}>
         <Modal.Header className="text-2xl font-bold mb-2 ml-1">
           Create Class
         </Modal.Header>
