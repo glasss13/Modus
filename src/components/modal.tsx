@@ -2,18 +2,31 @@ import Portal from "./portal";
 import { Modal as DaisyModal, ModalProps } from "react-daisyui";
 import { useEffect } from "react";
 
-const Modal = (props: ModalProps) => {
+const Modal = (props: ModalProps & { onClickEscape?: () => void }) => {
+  const { onClickEscape, ...modalProps } = props;
+
   useEffect(() => {
-    if (props.open) {
+    const func = (e: KeyboardEvent) => {
+      if (modalProps.open && e.key === "Escape") onClickEscape?.();
+    };
+    window.addEventListener("keydown", func);
+
+    return () => {
+      window.removeEventListener("keydown", func);
+    };
+  });
+
+  useEffect(() => {
+    if (modalProps.open) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
     }
-  }, [props.open]);
+  }, [modalProps.open]);
 
   return (
     <Portal>
-      <DaisyModal {...props}>{props.children}</DaisyModal>
+      <DaisyModal {...modalProps}>{modalProps.children}</DaisyModal>
     </Portal>
   );
 };
