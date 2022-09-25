@@ -19,11 +19,14 @@ const CreateClass = () => {
   const [createPressed, setCreatePressed] = useState(false);
 
   const context = trpc.useContext();
-  const { mutate: makeClass } = trpc.useMutation(["class.makeClass"], {
-    onSuccess() {
-      context.invalidateQueries(["class.getClasses"]);
+  const { mutate: makeClass, isLoading } = trpc.useMutation(
+    ["class.makeClass"],
+    {
+      onSuccess() {
+        context.invalidateQueries(["class.getClasses"]);
+      },
     },
-  });
+  );
 
   const resetState = () => {
     setStandards([]);
@@ -55,6 +58,13 @@ const CreateClass = () => {
         className="rounded-md"
         onClickEscape={resetState}>
         <Modal.Header className="text-2xl font-bold mb-2 ml-1">
+          <Button
+            size="sm"
+            shape="circle"
+            className="absolute right-3 top-3"
+            onClick={resetState}>
+            ✕
+          </Button>
           Create Class
         </Modal.Header>
         <Divider />
@@ -126,7 +136,7 @@ const CreateClass = () => {
           </Button>
         </Modal.Body>
         <Modal.Actions>
-          <Button color="primary" onClick={onClickCreate}>
+          <Button color="primary" onClick={onClickCreate} loading={isLoading}>
             Create Class
           </Button>
         </Modal.Actions>
