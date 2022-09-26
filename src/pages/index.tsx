@@ -24,6 +24,7 @@ const Home: NextPage = () => {
           classes.map(class_ => (
             <ClassCard
               key={class_.id}
+              id={class_.id}
               name={class_.name}
               standards={class_.standards}
             />

@@ -1,7 +1,6 @@
 import { createRouter } from "./context";
 import { z } from "zod";
 import { SummativeGradeValue, Prisma } from "@prisma/client";
-import { createNextApiHandler } from "@trpc/server/adapters/next";
 
 export const classRouter = createRouter()
   .query("getClasses", {
