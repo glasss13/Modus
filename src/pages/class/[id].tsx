@@ -87,12 +87,6 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
   };
 
   return (
-    <>
-      <Head>
-        <title>{id}</title>
-        <meta name="description" content="Modus Grade Calculator" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <main>
         <h1 className="text-3xl text-center mt-2">{class_.name}</h1>
         <p>Assignments:</p>

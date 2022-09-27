@@ -1,5 +1,4 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import ClassCard from "../components/classCard";
 import CreateClass from "../components/createClass";
@@ -10,12 +9,6 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Modus Grade Calculator</title>
-        <meta name="description" content="Modus Grade Calculator" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
       <h1 className="text-center text-5xl md:text-[5rem] leading-normal font-extrabold">
         Modus Grade Calculator
       </h1>
