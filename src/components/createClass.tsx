@@ -83,7 +83,7 @@ const CreateClass = () => {
           />
           <h3 className="mt-4 mb-2 text-xl">Standards:</h3>
           {standards.map((standardName, idx) => (
-            <div key={idx} className="flex gap-2 first:mt-0 mt-4">
+            <div key={idx} className="flex gap-2 first:mt-0 mt-4 items-center">
               <Button
                 onClick={() =>
                   setStandards(values => {
