@@ -18,16 +18,27 @@ enum SummativeGradeValue {
 }
 
 model SummativeGrade {
-  id         String              @id @default(cuid())
-  value      SummativeGradeValue
-  standard   Standard            @relation(fields: [standardId], references: [id])
-  standardId String
+  id           String              @id @default(cuid())
+  value        SummativeGradeValue
+  standard     Standard            @relation(fields: [standardId], references: [id])
+  standardId   String
+  assignment   Assignment?         @relation(fields: [assignmentId], references: [id])
+  assignmentId String?
+}
+
+model Assignment {
+  id      String           @id @default(cuid())
+  name    String
+  grades  SummativeGrade[]
+  class   Class?           @relation(fields: [classId], references: [id])
+  classId String?
 }
 
 model Class {
-  id        String     @id @default(cuid())
-  name      String
-  standards Standard[]
+  id          String       @id @default(cuid())
+  name        String
+  standards   Standard[]
+  assignments Assignment[]
 }
 
 model Standard {

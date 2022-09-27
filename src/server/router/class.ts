@@ -2,17 +2,43 @@ import { createRouter } from "./context";
 import { z } from "zod";
 import { SummativeGradeValue, Prisma } from "@prisma/client";
 
+const fullClass = Prisma.validator<Prisma.ClassInclude>()({
+  standards: {
+    include: {
+      summativeGrades: true,
+    },
+  },
+  assignments: {
+    include: {
+      grades: {
+        include: {
+          standard: true,
+        },
+      },
+    },
+  },
+});
+
 export const classRouter = createRouter()
   .query("getClasses", {
     async resolve({ ctx }) {
       return await ctx.prisma.class.findMany({
-        include: {
-          standards: {
-            include: {
-              summativeGrades: true,
-            },
+        include: fullClass,
+      });
+    },
+  })
+  .query("byId", {
+    input: z.object({
+      id: z.string(),
+    }),
+    async resolve({ input, ctx }) {
+      return await ctx.prisma.class.findFirst({
+        where: {
+          id: {
+            equals: input.id,
           },
         },
+        include: fullClass,
       });
     },
   })
