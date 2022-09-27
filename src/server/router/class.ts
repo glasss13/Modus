@@ -42,6 +42,41 @@ export const classRouter = createRouter()
       });
     },
   })
+  .mutation("deleteById", {
+    input: z.object({
+      id: z.string(),
+    }),
+    async resolve({ input, ctx }) {
+      const standards = await ctx.prisma.standard.findMany({
+        where: {
+          classId: { equals: input.id },
+        },
+      });
+
+      const deleteGradesOperation = ctx.prisma.summativeGrade.deleteMany({
+        where: { standardId: { in: standards.map(standard => standard.id) } },
+      });
+
+      const deleteAssignmentsOperation = ctx.prisma.assignment.deleteMany({
+        where: { classId: { equals: input.id } },
+      });
+
+      const deleteStandardsOperation = ctx.prisma.standard.deleteMany({
+        where: { classId: { equals: input.id } },
+      });
+
+      const deleteClassOperation = ctx.prisma.class.delete({
+        where: { id: input.id },
+      });
+
+      await ctx.prisma.$transaction([
+        deleteGradesOperation,
+        deleteAssignmentsOperation,
+        deleteStandardsOperation,
+        deleteClassOperation,
+      ]);
+    },
+  })
   .mutation("makeClass", {
     input: z.object({
       name: z.string(),
