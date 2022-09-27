@@ -56,6 +56,7 @@ const CreateClass = () => {
       <Modal
         open={showDialog}
         className="rounded-md"
+        onClickBackdrop={resetState}
         onClickEscape={resetState}>
         <Modal.Header className="text-2xl font-bold mb-2 ml-1">
           <Button
