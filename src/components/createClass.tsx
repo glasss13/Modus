@@ -144,8 +144,7 @@ const CreateClass = () => {
       <Card
         onClick={() => setShowDialog(true)}
         className="rounded-xl border-gray-600 mt-4 h-32 items-center justify-center transition-colors border-dashed border-2 hover:bg-slate-500 hover:bg-opacity-20 hover:cursor-pointer group">
-        <p className="absolute top-4 group-hover:hidden">Add New Class</p>
-        <p className="absolute transition-all text-4xl text-base-200 bg-gray-600 bg-opacity-40 rounded-full group-hover:text-gray-400 group-hover:transform group-hover:scale-125">
+        <p className="transition-all text-4xl text-base-200 bg-gray-600 bg-opacity-40 rounded-full group-hover:text-gray-400 group-hover:transform group-hover:scale-125">
           <PlusIcon />
         </p>
       </Card>
