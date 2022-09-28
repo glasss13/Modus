@@ -81,7 +81,7 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
         </Breadcrumbs>
       </div>
       <Divider />
-      <div className="md:w-1/2">
+      <div className="md:w-1/3">
         {class_.assignments.length === 0 ? (
           <h2 className="text-xl mb-4 text-center">No assignments yet :(</h2>
         ) : (
