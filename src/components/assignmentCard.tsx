@@ -1,6 +1,26 @@
-import { Assignment, Standard, SummativeGrade } from "@prisma/client";
+import {
+  Assignment,
+  Standard,
+  SummativeGrade,
+  SummativeGradeValue,
+} from "@prisma/client";
 import Link from "next/link";
 import { Card, Tooltip } from "react-daisyui";
+
+const gradeValue = (grade: SummativeGradeValue) => {
+  switch (grade) {
+    case "EE":
+      return 4;
+    case "ME":
+      return 3;
+    case "AE":
+      return 2;
+    case "BE":
+      return 1;
+    case "NE":
+      return 0;
+  }
+};
 
 const AssignmentCard: React.FC<{
   assignment: Assignment & {
@@ -20,13 +40,15 @@ const AssignmentCard: React.FC<{
             } assessed`}
           </p>
           <div className="flex gap-1 flex-wrap-reverse mt-6">
-            {assignment.grades.map(grade => (
-              <Tooltip key={grade.id} message={grade.value}>
-                <div
-                  className={`w-4 h-4 rounded-sm bg-${grade.value.toLowerCase()}`}
-                />
-              </Tooltip>
-            ))}
+            {assignment.grades
+              .sort((a, b) => gradeValue(a.value) - gradeValue(b.value))
+              .map(grade => (
+                <Tooltip key={grade.id} message={grade.value}>
+                  <div
+                    className={`w-4 h-4 rounded-sm bg-${grade.value.toLowerCase()}`}
+                  />
+                </Tooltip>
+              ))}
           </div>
         </Card.Body>
       </Card>
