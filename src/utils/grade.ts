@@ -39,7 +39,7 @@ export const getGradeValue = (grade: SummativeGradeValue) => {
   }
 };
 
-const summativeAverage = (grades: SummativeGradeValueOnly[]) => {
+export const summativeAverage = (grades: SummativeGradeValueOnly[]) => {
   const gradesValues = grades.map(grade => getGradeValue(grade.value));
   const mid = Math.floor(gradesValues.length / 2);
 

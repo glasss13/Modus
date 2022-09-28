@@ -2,13 +2,14 @@ import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Breadcrumbs, Button, Divider } from "react-daisyui";
+import { Breadcrumbs, Divider } from "react-daisyui";
 import { trpc } from "../../utils/trpc";
 import CreateAssignment from "../../components/createAssignment";
 import { calculateLetterGrade, LetterGrade } from "../../utils/grade";
 import { AiOutlineHome as HomeIcon } from "react-icons/ai";
 import { GiNotebook as NotebookIcon } from "react-icons/gi";
 import AssignmentCard from "../../components/assignmentCard";
+import StandardsChart from "../../components/standardsChart";
 
 const LetterGradeSpan: React.FC<{ grade: LetterGrade }> = ({ grade }) => {
   return grade.toString().length > 1 ? (
@@ -81,25 +82,31 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
         </Breadcrumbs>
       </div>
       <Divider />
-      <div className="md:w-1/3">
-        {class_.assignments.length === 0 ? (
-          <h2 className="text-xl mb-4 text-center">No assignments yet :(</h2>
-        ) : (
-          <h2 className="text-xl mb-4 text-center">Assignments</h2>
-        )}
+      <div className="flex flex-col md:flex-row">
+        <div className="md:w-1/3">
+          {class_.assignments.length === 0 ? (
+            <h2 className="text-xl mb-4 text-center">No assignments yet :(</h2>
+          ) : (
+            <h2 className="text-xl mb-4 text-center">Assignments</h2>
+          )}
 
-        <div className="flex flex-col">
-          {class_.assignments.map(assignment => (
-            <AssignmentCard key={assignment.id} assignment={assignment} />
-          ))}
+          <div className="flex flex-col">
+            {class_.assignments.map(assignment => (
+              <AssignmentCard key={assignment.id} assignment={assignment} />
+            ))}
 
-          <CreateAssignment class_={class_} />
+            <CreateAssignment class_={class_} />
+          </div>
+        </div>
+
+        {/* <Button color="error" onClick={() => deleteClass({ id: class_.id })}>
+          delete
+        </Button> */}
+        <div className="mt-8 ml-0 md:mt-0 grow md:ml-12">
+          <h2 className="text-xl mb-4 text-center">Standards</h2>
+          <StandardsChart standards={class_.standards} />
         </div>
       </div>
-
-      <Button color="error" onClick={() => deleteClass({ id: class_.id })}>
-        delete
-      </Button>
     </main>
   );
 };
