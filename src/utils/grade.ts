@@ -47,13 +47,13 @@ const summativeAverage = (grades: SummativeGradeValueOnly[]) => {
 
   const a = sorted[mid];
   const b = sorted[mid - 1];
-  if (!a || !b) {
-    return null;
-  }
 
   if (gradesValues.length % 2 !== 0) {
     return a;
   } else {
+    if (!a || !b) {
+      return null;
+    }
     return (a + b) / 2;
   }
 };
