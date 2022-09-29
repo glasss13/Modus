@@ -75,7 +75,7 @@ const CreateAssignment: React.FC<{
   return (
     <>
       <Modal open={open} onClickBackdrop={onClose} onClickEscape={onClose}>
-        <Modal.Header className="text-2xl font-bold mb-2 ml-1">
+        <Modal.Header className="mb-2 ml-1 text-2xl font-bold">
           <Button
             size="sm"
             shape="circle"
@@ -100,7 +100,7 @@ const CreateAssignment: React.FC<{
           {assessedStandards.map((assessed, idx) => (
             <div
               key={assessed.standardId ?? idx}
-              className="flex gap-2 first:mt-0 mt-4 items-center">
+              className="mt-4 flex items-center gap-2 first:mt-0">
               <Button
                 onClick={() => removeAssessed(idx)}
                 shape="circle"
@@ -110,7 +110,7 @@ const CreateAssignment: React.FC<{
                 -
               </Button>
               <select
-                className={`select select-bordered focus:outline-offset-0 w-1/2 ${
+                className={`select select-bordered w-1/2 focus:outline-offset-0 ${
                   createPressed && assessed.name == null ? "select-error" : ""
                 }`}
                 key={assessed.standardId ?? idx}
@@ -182,7 +182,7 @@ const CreateAssignment: React.FC<{
           ))}
           <Button
             startIcon={<PlusIcon className="text-2xl" />}
-            className="gap-2 pl-2 rounded-md mt-6"
+            className="mt-6 gap-2 rounded-md pl-2"
             disabled={assessedStandards.length >= props.class_.standards.length}
             onClick={() => setAssessedStandards(values => [...values, {}])}>
             select standard
@@ -197,8 +197,8 @@ const CreateAssignment: React.FC<{
       </Modal>
       <Card
         onClick={() => setOpen(true)}
-        className="rounded-xl border-gray-600 mt-4 h-32 items-center justify-center transition-colors border-dashed border-2 hover:bg-slate-500 hover:bg-opacity-20 hover:cursor-pointer group">
-        <p className="transition-all text-4xl text-base-200 bg-gray-600 bg-opacity-40 rounded-full group-hover:text-gray-400 group-hover:transform group-hover:scale-125">
+        className="group mt-4 h-32 items-center justify-center rounded-xl border-2 border-dashed border-gray-600 transition-colors hover:cursor-pointer hover:bg-slate-500 hover:bg-opacity-20">
+        <p className="rounded-full bg-gray-600 bg-opacity-40 text-4xl text-base-200 transition-all group-hover:scale-125 group-hover:transform group-hover:text-gray-400">
           <PlusIcon />
         </p>
       </Card>

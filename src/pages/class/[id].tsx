@@ -35,7 +35,7 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <main>
-          <h1 className="text-5xl text-center mt-2">Class not found</h1>
+          <h1 className="mt-2 text-center text-5xl">Class not found</h1>
         </main>
       </>
     );
@@ -50,7 +50,7 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <main>
-          <h1 className="text-5xl text-center mt-2">Loading...</h1>
+          <h1 className="mt-2 text-center text-5xl">Loading...</h1>
         </main>
       </>
     );
@@ -60,8 +60,8 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
   return (
     <main className="container mx-auto">
       <div className="flex flex-col items-center">
-        <h1 className="text-3xl text-center mt-2">{class_.name}</h1>
-        <h2 className="text-3xl text-center backdrop-brightness-150 w-12 h-12 mt-2 rounded-lg flex items-center justify-center">
+        <h1 className="mt-2 text-center text-3xl">{class_.name}</h1>
+        <h2 className="mt-2 flex h-12 w-12 items-center justify-center rounded-lg text-center text-3xl backdrop-brightness-150">
           {letterGrade == null ? (
             <span>--</span>
           ) : (
@@ -71,12 +71,12 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
         <Breadcrumbs>
           <Link href="/">
             <Breadcrumbs.Item className="link link-hover">
-              <HomeIcon className="w-4 h-4 mr-1" />
+              <HomeIcon className="mr-1 h-4 w-4" />
               Classes
             </Breadcrumbs.Item>
           </Link>
           <Breadcrumbs.Item>
-            <NotebookIcon className="w-4 h-4 mr-1" />
+            <NotebookIcon className="mr-1 h-4 w-4" />
             {class_.name}
           </Breadcrumbs.Item>
         </Breadcrumbs>
@@ -85,9 +85,9 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
       <div className="flex flex-col md:flex-row">
         <div className="md:w-1/3">
           {class_.assignments.length === 0 ? (
-            <h2 className="text-xl mb-4 text-center">No assignments yet :(</h2>
+            <h2 className="mb-4 text-center text-xl">No assignments yet :(</h2>
           ) : (
-            <h2 className="text-xl mb-4 text-center">Assignments</h2>
+            <h2 className="mb-4 text-center text-xl">Assignments</h2>
           )}
 
           <div className="flex flex-col">
@@ -102,8 +102,8 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
         {/* <Button color="error" onClick={() => deleteClass({ id: class_.id })}>
           delete
         </Button> */}
-        <div className="mt-8 ml-0 md:mt-0 grow md:ml-12">
-          <h2 className="text-xl mb-4 text-center">Standards</h2>
+        <div className="mt-8 ml-0 grow md:mt-0 md:ml-12">
+          <h2 className="mb-4 text-center text-xl">Standards</h2>
           <StandardsChart standards={class_.standards} />
         </div>
       </div>

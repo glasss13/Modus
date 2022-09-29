@@ -9,10 +9,10 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <h1 className="text-center text-5xl md:text-[5rem] leading-normal font-extrabold">
+      <h1 className="text-center text-5xl font-extrabold leading-normal md:text-[5rem]">
         Modus Grade Calculator
       </h1>
-      <main className="container flex flex-col min-h-screen mx-auto p-1 w-2/3  ">
+      <main className="container mx-auto flex min-h-screen w-2/3 flex-col p-1  ">
         {classes ? (
           classes.map(class_ => (
             <ClassCard

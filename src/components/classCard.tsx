@@ -40,7 +40,7 @@ const ClassCard = (props: Props) => {
 
   return (
     <Link href={`/class/${props.id}`}>
-      <Card className="bg-base-100 rounded-xl border-gray-600 first:mt-0 mt-4 hover:brightness-125 hover:cursor-pointer transition-transform hover:transform hover:scale-105">
+      <Card className="mt-4 rounded-xl border-gray-600 bg-base-100 transition-transform first:mt-0 hover:scale-105 hover:transform hover:cursor-pointer hover:brightness-125">
         <Card.Body>
           <Card.Title>{props.name}</Card.Title>
           <p>{letterGrade ?? "--"}</p>

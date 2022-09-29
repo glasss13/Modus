@@ -31,7 +31,7 @@ const AssignmentCard: React.FC<{
 }> = ({ assignment }) => {
   return (
     <Link key={assignment.id} href={`/assignment/${assignment.id}`}>
-      <Card className="bg-base-100 rounded-xl border-gray-600 first:mt-0 mt-4 hover:brightness-125 hover:cursor-pointer transition-transform hover:transform hover:scale-105">
+      <Card className="mt-4 rounded-xl border-gray-600 bg-base-100 transition-transform first:mt-0 hover:scale-105 hover:transform hover:cursor-pointer hover:brightness-125">
         <Card.Body className="pb-4">
           <Card.Title>{assignment.name}</Card.Title>
           <p className="text-gray-500">
@@ -39,13 +39,13 @@ const AssignmentCard: React.FC<{
               assignment.grades.length !== 1 ? "s" : ""
             } assessed`}
           </p>
-          <div className="flex gap-1 flex-wrap-reverse mt-6">
+          <div className="mt-6 flex flex-wrap-reverse gap-1">
             {assignment.grades
               .sort((a, b) => gradeValue(a.value) - gradeValue(b.value))
               .map(grade => (
                 <Tooltip key={grade.id} message={grade.value}>
                   <div
-                    className={`w-4 h-4 rounded-sm bg-${grade.value.toLowerCase()}`}
+                    className={`h-4 w-4 rounded-sm bg-${grade.value.toLowerCase()}`}
                   />
                 </Tooltip>
               ))}
