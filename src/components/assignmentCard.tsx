@@ -1,11 +1,8 @@
-import {
-  Assignment,
-  Standard,
-  SummativeGrade,
-  SummativeGradeValue,
-} from "@prisma/client";
-import Link from "next/link";
+import { SummativeGradeValue } from "@prisma/client";
+import { useState } from "react";
 import { Card, Tooltip } from "react-daisyui";
+import { inferQueryOutput } from "../utils/trpc";
+import EditAssignment from "./editAssignment";
 
 const gradeValue = (grade: SummativeGradeValue) => {
   switch (grade) {
@@ -22,16 +19,18 @@ const gradeValue = (grade: SummativeGradeValue) => {
   }
 };
 
+type Assignment = Exclude<inferQueryOutput<"assignment.byId">, null>;
+
 const AssignmentCard: React.FC<{
-  assignment: Assignment & {
-    grades: (SummativeGrade & {
-      standard: Standard;
-    })[];
-  };
+  assignment: Assignment;
 }> = ({ assignment }) => {
+  const [showEdit, setShowEdit] = useState(false);
+
   return (
-    <Link key={assignment.id} href={`/assignment/${assignment.id}`}>
-      <Card className="mt-4 rounded-xl border-gray-600 bg-base-100 transition-transform first:mt-0 hover:scale-105 hover:transform hover:cursor-pointer hover:brightness-125">
+    <>
+      <Card
+        onClick={() => setShowEdit(true)}
+        className="mt-4 rounded-xl border-gray-600 bg-base-100 transition-transform first:mt-0 hover:scale-105 hover:transform hover:cursor-pointer hover:brightness-125">
         <Card.Body className="pb-4">
           <Card.Title>{assignment.name}</Card.Title>
           <p className="text-gray-500">
@@ -52,7 +51,12 @@ const AssignmentCard: React.FC<{
           </div>
         </Card.Body>
       </Card>
-    </Link>
+      <EditAssignment
+        assignment={assignment}
+        open={showEdit}
+        onClose={() => setShowEdit(false)}
+      />
+    </>
   );
 };
 

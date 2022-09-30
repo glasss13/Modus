@@ -15,6 +15,11 @@ const fullClass = Prisma.validator<Prisma.ClassInclude>()({
           standard: true,
         },
       },
+      class: {
+        include: {
+          standards: true,
+        },
+      },
     },
   },
 });
