@@ -30,8 +30,8 @@ model Assignment {
   id      String           @id @default(cuid())
   name    String
   grades  SummativeGrade[]
-  class   Class?           @relation(fields: [classId], references: [id])
-  classId String?
+  class   Class            @relation(fields: [classId], references: [id])
+  classId String
 }
 
 model Class {
