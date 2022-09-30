@@ -99,14 +99,17 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
           </div>
         </div>
 
-        <Button color="error" onClick={() => deleteClass({ id: class_.id })}>
-          delete
-        </Button>
         <div className="mt-8 ml-0 grow md:mt-0 md:ml-12">
           <h2 className="mb-4 text-center text-xl">Standards</h2>
           <StandardsChart standards={class_.standards} />
         </div>
       </div>
+      <Button
+        className="mt-16 w-full md:w-auto"
+        color="error"
+        onClick={() => deleteClass({ id: class_.id })}>
+        delete class
+      </Button>
     </main>
   );
 };
