@@ -211,7 +211,7 @@ const EditAssignment: React.FC<{
             delete
           </Button>
           <Button color="primary" onClick={onClickEdit} loading={isLoading}>
-            create assignment
+            edit assignment
           </Button>
         </Modal.Actions>
       </Modal.Body>
