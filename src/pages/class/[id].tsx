@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Breadcrumbs, Divider } from "react-daisyui";
+import { Breadcrumbs, Button, Divider } from "react-daisyui";
 import { trpc } from "../../utils/trpc";
 import CreateAssignment from "../../components/createAssignment";
 import { calculateLetterGrade, LetterGrade } from "../../utils/grade";
@@ -99,9 +99,9 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
           </div>
         </div>
 
-        {/* <Button color="error" onClick={() => deleteClass({ id: class_.id })}>
+        <Button color="error" onClick={() => deleteClass({ id: class_.id })}>
           delete
-        </Button> */}
+        </Button>
         <div className="mt-8 ml-0 grow md:mt-0 md:ml-12">
           <h2 className="mb-4 text-center text-xl">Standards</h2>
           <StandardsChart standards={class_.standards} />
