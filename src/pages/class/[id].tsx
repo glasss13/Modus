@@ -12,6 +12,7 @@ import AssignmentCard from "../../components/assignmentCard";
 import StandardsChart from "../../components/standardsChart";
 import Modal from "../../components/modal";
 import { useState } from "react";
+import EditClassDialog from "../../components/editClassDialog";
 
 const LetterGradeSpan: React.FC<{ grade: LetterGrade }> = ({ grade }) => {
   return grade.toString().length > 1 ? (
@@ -26,6 +27,7 @@ const LetterGradeSpan: React.FC<{ grade: LetterGrade }> = ({ grade }) => {
 
 const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
   const [deleting, setDeleting] = useState(false);
+  const [editing, setEditing] = useState(false);
   const context = trpc.useContext();
   const { data: class_ } = trpc.useQuery(["class.byId", { id }]);
   const { mutate: deleteClass } = trpc.useMutation(["class.deleteById"], {
@@ -115,9 +117,18 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
         </div>
       </div>
       <div className="mt-16 flex gap-4">
-        <Button color="info" className="w-1/2 md:w-auto">
+        <Button
+          color="info"
+          className="w-1/2 md:w-auto"
+          onClick={() => setEditing(true)}>
           edit class
         </Button>
+        <EditClassDialog
+          class_={class_}
+          open={editing}
+          onClose={() => setEditing(false)}
+        />
+
         <Button
           className="w-1/2 md:w-auto"
           color="error"

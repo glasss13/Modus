@@ -47,6 +47,74 @@ export const classRouter = createRouter()
       });
     },
   })
+  .mutation("patchById", {
+    input: z.object({
+      id: z.string(),
+      name: z.string().optional(),
+      standards: z
+        .array(
+          z.object({
+            name: z.string(),
+            id: z.string().optional(),
+          }),
+        )
+        .optional(),
+    }),
+    async resolve({ input, ctx }) {
+      const standardToDeleteWhereClause = {
+        AND: [
+          {
+            classId: input.id,
+          },
+          {
+            id: {
+              notIn: input.standards
+                ?.filter((std): std is Required<typeof std> => !!std.id)
+                .map(std => std.id),
+            },
+          },
+        ],
+      };
+
+      const deleteGradeOperation = ctx.prisma.summativeGrade.deleteMany({
+        where: {
+          standard: standardToDeleteWhereClause,
+        },
+      });
+
+      const deleteStandardsOperation = ctx.prisma.standard.deleteMany({
+        where: standardToDeleteWhereClause,
+      });
+
+      await ctx.prisma.$transaction([
+        deleteGradeOperation,
+        deleteStandardsOperation,
+      ]);
+
+      await ctx.prisma.class.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          standards:
+            input.standards == null
+              ? undefined
+              : {
+                  connectOrCreate: input.standards.map(std => ({
+                    where: {
+                      id:
+                        std.id ?? "IF_THE_ID_IS_UNDEFINED_CREATE_NEW_STANDARD",
+                    },
+                    create: {
+                      name: std.name,
+                    },
+                  })),
+                },
+        },
+      });
+    },
+  })
   .mutation("deleteById", {
     input: z.object({
       id: z.string(),
