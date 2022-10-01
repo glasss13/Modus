@@ -30,19 +30,21 @@ const AssignmentCard: React.FC<{
     <>
       <Card
         onClick={() => setShowEdit(true)}
-        className="mt-4 rounded-xl border-gray-600 bg-base-100 transition-transform first:mt-0 hover:scale-105 hover:transform hover:cursor-pointer hover:brightness-125">
-        <Card.Body className="pb-4">
+        className="mt-4 overflow-visible rounded-xl border-gray-600 bg-base-100 transition-transform first:mt-0 hover:scale-105 hover:transform hover:cursor-pointer hover:brightness-125">
+        <Card.Body className=" pb-4">
           <Card.Title>{assignment.name}</Card.Title>
           <p className="text-gray-500">
             {`${assignment.grades.length} standard${
               assignment.grades.length !== 1 ? "s" : ""
             } assessed`}
           </p>
-          <div className="mt-6 flex flex-wrap-reverse gap-1">
+          <div className="mt-6 flex flex-wrap-reverse gap-1 ">
             {assignment.grades
               .sort((a, b) => gradeValue(a.value) - gradeValue(b.value))
               .map(grade => (
-                <Tooltip key={grade.id} message={grade.value}>
+                <Tooltip
+                  key={grade.id}
+                  message={`${grade.value} - ${grade.standard.name}`}>
                   <div
                     className={`h-4 w-4 rounded-sm bg-${grade.value.toLowerCase()}`}
                   />
