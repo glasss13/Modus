@@ -8,7 +8,7 @@ import {
   Tick,
 } from "chart.js";
 import { getGradeValue, summativeAverage } from "../utils/grade";
-import { Standard, SummativeGrade } from "@prisma/client";
+import { Standard, SummativeGrade, SummativeGradeValue } from "@prisma/client";
 import { useMemo } from "react";
 
 const avgColor = (avg: number | null | undefined) => {
@@ -33,28 +33,13 @@ const options = {
   responsive: true,
   scales: {
     y: {
+      min: 0,
+      max: 100,
       ticks: {
         callback: function (_: unknown, __: unknown, ticks: Tick[]) {
-          if (ticks[0]) {
-            ticks[0].value = getGradeValue("NE");
-            ticks[0].label = "NE";
-          }
-          if (ticks[1]) {
-            ticks[1].value = getGradeValue("BE");
-            ticks[1].label = "BE";
-          }
-          if (ticks[2]) {
-            ticks[2].value = getGradeValue("AE");
-            ticks[2].label = "AE";
-          }
-          if (ticks[3]) {
-            ticks[3].value = getGradeValue("ME");
-            ticks[3].label = "ME";
-          }
-          if (ticks[4]) {
-            ticks[4].value = getGradeValue("EE");
-            ticks[4].label = "EE";
-          }
+          Object.values(SummativeGradeValue).forEach((val, idx) => {
+            ticks[idx] = { value: getGradeValue(val), label: val };
+          });
           return null;
         },
       },
