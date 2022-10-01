@@ -49,10 +49,6 @@ model Standard {
   summativeGrades SummativeGrade[]
 }
 
-model Example {
-  id String @id @default(cuid())
-}
-
 model Account {
   id                String  @id @default(cuid())
   userId            String
