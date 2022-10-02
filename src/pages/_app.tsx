@@ -9,6 +9,7 @@ import type { AppRouter } from "../server/router";
 import type { Session } from "next-auth";
 import "../styles/globals.css";
 import Head from "next/head";
+import AuthStatus from "../components/authStatus";
 
 const HeaderComponent: React.FC<{ children: React.ReactNode }> = props => (
   <>
@@ -34,6 +35,7 @@ const HeaderComponent: React.FC<{ children: React.ReactNode }> = props => (
       />
       <link rel="manifest" href="/site.webmanifest" />
     </Head>
+    <AuthStatus />
     {props.children}
   </>
 );
