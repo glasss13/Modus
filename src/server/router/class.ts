@@ -1,4 +1,4 @@
-import { createRouter } from "./context";
+import { createProtectedRouter } from "./context";
 import { z } from "zod";
 import { SummativeGradeValue, Prisma } from "@prisma/client";
 
@@ -24,10 +24,13 @@ const fullClass = Prisma.validator<Prisma.ClassInclude>()({
   },
 });
 
-export const classRouter = createRouter()
+export const classRouter = createProtectedRouter()
   .query("getClasses", {
     async resolve({ ctx }) {
       return await ctx.prisma.class.findMany({
+        where: {
+          userId: ctx.session.user.id,
+        },
         include: fullClass,
       });
     },
@@ -37,10 +40,11 @@ export const classRouter = createRouter()
       id: z.string(),
     }),
     async resolve({ input, ctx }) {
-      return await ctx.prisma.class.findFirst({
+      return await ctx.prisma.class.findUnique({
         where: {
-          id: {
-            equals: input.id,
+          id_userId: {
+            id: input.id,
+            userId: ctx.session.user.id,
           },
         },
         include: fullClass,
@@ -61,39 +65,50 @@ export const classRouter = createRouter()
         .optional(),
     }),
     async resolve({ input, ctx }) {
-      const standardToDeleteWhereClause = {
-        AND: [
-          {
-            classId: input.id,
-          },
-          {
-            id: {
-              notIn: input.standards
-                ?.filter((std): std is Required<typeof std> => !!std.id)
-                .map(std => std.id),
-            },
-          },
-        ],
+      // const classExistsAndAuthorized =
+      //   (await ctx.prisma.class.count({
+      //     where: {
+      //       id: input.id,
+      //       userId: ctx.session.user.id,
+      //     },
+      //   })) > 0;
+
+      // if (!classExistsAndAuthorized) {
+      //   return null;
+      // }
+
+      const standardsToDeleteWhereClause = {
+        classId: input.id,
+
+        id: {
+          notIn: input.standards
+            ?.filter((std): std is Required<typeof std> => !!std.id)
+            .map(std => std.id),
+        },
+        userId: ctx.session.user.id,
       };
 
-      const deleteGradeOperation = ctx.prisma.summativeGrade.deleteMany({
+      const deleteGradesOperation = ctx.prisma.summativeGrade.deleteMany({
         where: {
-          standard: standardToDeleteWhereClause,
+          standard: standardsToDeleteWhereClause,
         },
       });
 
       const deleteStandardsOperation = ctx.prisma.standard.deleteMany({
-        where: standardToDeleteWhereClause,
+        where: standardsToDeleteWhereClause,
       });
 
       await ctx.prisma.$transaction([
-        deleteGradeOperation,
+        deleteGradesOperation,
         deleteStandardsOperation,
       ]);
 
       await ctx.prisma.class.update({
         where: {
-          id: input.id,
+          id_userId: {
+            id: input.id,
+            userId: ctx.session.user.id,
+          },
         },
         data: {
           name: input.name,
@@ -108,6 +123,12 @@ export const classRouter = createRouter()
                     },
                     create: {
                       name: std.name,
+                      user: {
+                        connect: {
+                          id: ctx.session.user.id,
+                        },
+                      },
+                      // userId: ctx.session.user.id,
                     },
                   })),
                 },
@@ -122,24 +143,34 @@ export const classRouter = createRouter()
     async resolve({ input, ctx }) {
       const standards = await ctx.prisma.standard.findMany({
         where: {
-          classId: { equals: input.id },
+          classId: input.id,
+          userId: ctx.session.user.id,
         },
       });
 
       const deleteGradesOperation = ctx.prisma.summativeGrade.deleteMany({
-        where: { standardId: { in: standards.map(standard => standard.id) } },
+        where: {
+          standardId: { in: standards.map(standard => standard.id) },
+          userId: ctx.session.user.id,
+        },
       });
 
       const deleteAssignmentsOperation = ctx.prisma.assignment.deleteMany({
-        where: { classId: { equals: input.id } },
+        where: { classId: input.id, userId: ctx.session.user.id },
       });
 
       const deleteStandardsOperation = ctx.prisma.standard.deleteMany({
-        where: { classId: { equals: input.id } },
+        where: { classId: input.id, userId: ctx.session.user.id },
       });
 
       const deleteClassOperation = ctx.prisma.class.delete({
-        where: { id: input.id },
+        where: {
+          id_userId: {
+            id: input.id,
+            userId: ctx.session.user.id,
+          },
+        },
+        // where: { id: input.id, userId: ctx.session.user.id },
       });
 
       await ctx.prisma.$transaction([
@@ -161,16 +192,25 @@ export const classRouter = createRouter()
       ),
     }),
     async resolve({ input, ctx }) {
+      const connectUser = {
+        connect: {
+          id: ctx.session.user.id,
+        },
+      };
+
       const classData = Prisma.validator<Prisma.ClassCreateInput>()({
         name: input.name,
+        user: connectUser,
         standards: {
           create: input.standards.map(standard => ({
             name: standard.name,
             summativeGrades: {
-              createMany: {
-                data: standard.grades.map(grade => ({ value: grade })),
-              },
+              create: standard.grades.map(grade => ({
+                value: grade,
+                user: connectUser,
+              })),
             },
+            user: connectUser,
           })),
         },
       });

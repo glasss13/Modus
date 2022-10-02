@@ -1,4 +1,4 @@
-import { createRouter } from "./context";
+import { createProtectedRouter } from "./context";
 import { z } from "zod";
 import { SummativeGradeValue, Prisma } from "@prisma/client";
 
@@ -10,10 +10,13 @@ const fullAssignment = Prisma.validator<Prisma.AssignmentInclude>()({
   },
 });
 
-export const assignmentRouter = createRouter()
+export const assignmentRouter = createProtectedRouter()
   .query("all", {
     async resolve({ ctx }) {
       return await ctx.prisma.assignment.findMany({
+        where: {
+          userId: ctx.session.user.id,
+        },
         include: fullAssignment,
       });
     },
@@ -25,7 +28,10 @@ export const assignmentRouter = createRouter()
     async resolve({ input, ctx }) {
       return await ctx.prisma.assignment.findUnique({
         where: {
-          id: input.id,
+          id_userId: {
+            id: input.id,
+            userId: ctx.session.user.id,
+          },
         },
         include: {
           class: {
@@ -59,9 +65,8 @@ export const assignmentRouter = createRouter()
       if (input.grades) {
         await ctx.prisma.summativeGrade.deleteMany({
           where: {
-            assignmentId: {
-              equals: input.id,
-            },
+            assignmentId: input.id,
+            userId: ctx.session.user.id,
           },
         });
       }
@@ -73,14 +78,27 @@ export const assignmentRouter = createRouter()
           Prisma.validator<Prisma.AssignmentUpdateWithWhereUniqueWithoutClassInput>()(
             {
               where: {
-                id: input.id,
+                id_userId: {
+                  id: input.id,
+                  userId: ctx.session.user.id,
+                },
               },
               data: {
                 name: input.name,
                 grades: {
-                  createMany: {
-                    data: input.grades,
-                  },
+                  create: input.grades.map(x => ({
+                    standard: {
+                      connect: {
+                        id: x.standardId,
+                      },
+                    },
+                    user: {
+                      connect: {
+                        id: ctx.session.user.id,
+                      },
+                    },
+                    value: x.value,
+                  })),
                 },
               },
             },
@@ -90,7 +108,10 @@ export const assignmentRouter = createRouter()
           Prisma.validator<Prisma.AssignmentUpdateWithWhereUniqueWithoutClassInput>()(
             {
               where: {
-                id: input.id,
+                id_userId: {
+                  id: input.id,
+                  userId: ctx.session.user.id,
+                },
               },
               data: {
                 name: input.name,
@@ -109,15 +130,17 @@ export const assignmentRouter = createRouter()
     async resolve({ input, ctx }) {
       const deleteGradeOperation = ctx.prisma.summativeGrade.deleteMany({
         where: {
-          assignmentId: {
-            equals: input.id,
-          },
+          assignmentId: input.id,
+          userId: ctx.session.user.id,
         },
       });
 
       const deleteAssignmentOperation = ctx.prisma.assignment.delete({
         where: {
-          id: input.id,
+          id_userId: {
+            id: input.id,
+            userId: ctx.session.user.id,
+          },
         },
       });
 
@@ -134,9 +157,8 @@ export const assignmentRouter = createRouter()
     async resolve({ input, ctx }) {
       return await ctx.prisma.assignment.findMany({
         where: {
-          classId: {
-            equals: input.classId,
-          },
+          classId: input.classId,
+          userId: ctx.session.user.id,
         },
         include: fullAssignment,
       });
@@ -156,15 +178,30 @@ export const assignmentRouter = createRouter()
     async resolve({ input, ctx }) {
       const assignmentData = Prisma.validator<Prisma.AssignmentCreateInput>()({
         name: input.name,
+        user: {
+          connect: {
+            id: ctx.session.user.id,
+          },
+        },
         class: {
           connect: {
             id: input.classId,
           },
         },
         grades: {
-          createMany: {
-            data: input.grades,
-          },
+          create: input.grades.map(g => ({
+            value: g.value,
+            standard: {
+              connect: {
+                id: g.standardId,
+              },
+            },
+            user: {
+              connect: {
+                id: ctx.session.user.id,
+              },
+            },
+          })),
         },
       });
 
