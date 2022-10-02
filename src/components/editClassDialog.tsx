@@ -114,7 +114,7 @@ const EditClassDialog: React.FC<{
       </Modal.Body>
       <Modal.Actions>
         <Button color="primary" onClick={onClickEdit} loading={isLoading}>
-          Create Class
+          edit
         </Button>
       </Modal.Actions>
     </Modal>
