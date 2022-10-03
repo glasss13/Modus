@@ -14,7 +14,7 @@ import AuthStatus from "../components/authStatus";
 const HeaderComponent: React.FC<{ children: React.ReactNode }> = props => (
   <>
     <Head>
-      <title>Modus Grade Calculator</title>
+      <title>Modus</title>
       <meta name="description" content="Modus Grade Calculator" />
       <link
         rel="apple-touch-icon"
