@@ -26,7 +26,11 @@ const Modal = (props: ModalProps & { onClickEscape?: () => void }) => {
 
   return (
     <Portal>
-      <DaisyModal {...modalProps}>{modalProps.children}</DaisyModal>
+      <DaisyModal
+        className={`${modalProps.className} overflow-x-hidden`}
+        {...modalProps}>
+        {modalProps.children}
+      </DaisyModal>
     </Portal>
   );
 };
