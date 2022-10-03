@@ -5,14 +5,15 @@ import CreateClass from "../components/createClass";
 import { Button } from "react-daisyui";
 
 const Home: NextPage = () => {
-  const { data: classes } = trpc.useQuery(["class.getClasses"]);
+  const { data: classes, error, isError } = trpc.useQuery(["class.getClasses"]);
 
   return (
     <>
       <h1 className="text-center text-5xl font-extrabold leading-normal md:text-[5rem]">
-        Modus Grade Calculator
+        Modus
       </h1>
       <main className="container mx-auto flex min-h-screen w-2/3 flex-col p-1  ">
+        {/* {isError && error.data?.code === "UNAUTHORIZED" ? } */}
         {classes ? (
           classes.map(class_ => (
             <ClassCard

@@ -15,7 +15,7 @@ const AuthStatus = () => {
           onMouseEnter={() => setDrop(true)}
           onMouseLeave={() => setDrop(false)}
           open={drop}
-          className="absolute right-8 top-4 rounded-lg border border-gray-600 bg-opacity-30">
+          className="absolute right-4 top-4 rounded-lg border border-gray-600 bg-opacity-30">
           <Collapse.Title className="flex items-center gap-2 bg-base-100 px-2">
             <Image
               className="rounded-full"
@@ -24,14 +24,14 @@ const AuthStatus = () => {
               height={32}
               alt=""
             />
-            {session.user?.name}
+            <p className="hidden md:block">{session.user?.name}</p>
           </Collapse.Title>
           <Collapse.Content className="bg-base-100 pl-1">
             <div
               className="flex cursor-pointer items-center gap-2 text-red-600"
               onClick={() => signOut()}>
               <LogOutIcon className="text-3xl" />
-              <p className="text-md">Sign Out</p>
+              <p className="text-md hidden md:block">Sign Out</p>
             </div>
           </Collapse.Content>
         </Collapse>
