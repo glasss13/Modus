@@ -3,16 +3,17 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Breadcrumbs, Button, Divider } from "react-daisyui";
-import { trpc } from "../../utils/trpc";
-import CreateAssignment from "../../components/createAssignment";
-import { calculateLetterGrade, LetterGrade } from "../../utils/grade";
+import { trpc } from "../../../utils/trpc";
+import CreateAssignment from "../../../components/createAssignment";
+import { calculateLetterGrade, LetterGrade } from "../../../utils/grade";
 import { AiOutlineHome as HomeIcon } from "react-icons/ai";
 import { GiNotebook as NotebookIcon } from "react-icons/gi";
-import AssignmentCard from "../../components/assignmentCard";
-import StandardsChart from "../../components/standardsChart";
-import Modal from "../../components/modal";
+import AssignmentCard from "../../../components/assignmentCard";
+import StandardsChart from "../../../components/standardsChart";
+import Modal from "../../../components/modal";
 import { useState } from "react";
-import EditClassDialog from "../../components/editClassDialog";
+import EditClassDialog from "../../../components/editClassDialog";
+// import SimulateGradeDialog from "../../../components/simulateGradeDialog";
 
 const LetterGradeSpan: React.FC<{ grade: LetterGrade }> = ({ grade }) => {
   return grade.toString().length > 1 ? (
@@ -28,6 +29,7 @@ const LetterGradeSpan: React.FC<{ grade: LetterGrade }> = ({ grade }) => {
 const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
   const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
+  // const [simulating, setSimulating] = useState(false);
   const context = trpc.useContext();
   const { data: class_ } = trpc.useQuery(["class.byId", { id }]);
   const { mutate: deleteClass } = trpc.useMutation(["class.deleteById"], {
@@ -119,7 +121,7 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
       <div className="mt-16 flex gap-4">
         <Button
           color="info"
-          className="w-1/2 md:w-auto"
+          className="w-1/3 md:w-auto"
           onClick={() => setEditing(true)}>
           edit class
         </Button>
@@ -130,11 +132,23 @@ const ClassPageContent: React.FC<{ id: string }> = ({ id }) => {
         />
 
         <Button
-          className="w-1/2 md:w-auto"
+          className="w-1/3 md:w-auto"
           color="error"
           onClick={() => setDeleting(true)}>
           delete class
         </Button>
+
+        <Link href={`/class/${id}/simulator`}>
+          <Button className="w-1/3 md:w-auto" color="success">
+            grade simulator
+          </Button>
+        </Link>
+
+        {/* <SimulateGradeDialog
+          open={simulating}
+          class_={class_}
+          onClose={() => setSimulating(false)}
+        /> */}
         <Modal
           open={deleting}
           className="rounded-xl"
