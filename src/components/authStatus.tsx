@@ -3,10 +3,13 @@ import Image from "next/image";
 import { Button, Collapse } from "react-daisyui";
 import { BiLogOut as LogOutIcon } from "react-icons/bi";
 import { signIn, useSession, signOut } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 const AuthStatus = () => {
   const [drop, setDrop] = useState(false);
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   return (
     <>
@@ -27,12 +30,21 @@ const AuthStatus = () => {
             <p className="hidden md:block">{session.user?.name}</p>
           </Collapse.Title>
           <Collapse.Content className="bg-base-100 pl-1">
-            <div
-              className="flex cursor-pointer items-center gap-2 text-red-600"
-              onClick={() => signOut()}>
-              <LogOutIcon className="text-3xl" />
-              <p className="text-md hidden md:block">Sign Out</p>
-            </div>
+            <Link href="/">
+              <div
+                className="flex cursor-pointer items-center gap-2 text-red-600"
+                onClick={async () => {
+                  await signOut({
+                    redirect: false,
+                    callbackUrl: "/",
+                  });
+                  router.push("/");
+                }}>
+                <LogOutIcon className="text-3xl" />
+
+                <p className="text-md hidden md:block">Sign Out</p>
+              </div>
+            </Link>
           </Collapse.Content>
         </Collapse>
       ) : (
