@@ -29,33 +29,22 @@ export const getGradeValue = (grade: SummativeGradeValue) => {
     case "EE":
       return 100;
     case "ME":
-      return 89.4;
+      return 92.8;
     case "AE":
       return 76.4;
     case "BE":
-      return 46.6;
+      return 50;
     case "NE":
       return 0.9;
   }
 };
 
 export const summativeAverage = (grades: SummativeGradeValueOnly[]) => {
-  const gradesValues = grades.map(grade => getGradeValue(grade.value));
-  const mid = Math.floor(gradesValues.length / 2);
-
-  const sorted = [...gradesValues].sort((a, b) => a - b);
-
-  const a = sorted[mid];
-  const b = sorted[mid - 1];
-
-  if (gradesValues.length % 2 !== 0) {
-    return a;
-  } else {
-    if (!a || !b) {
-      return null;
-    }
-    return (a + b) / 2;
-  }
+  if (grades.length === 0) return null;
+  const gradesValues = grades.map(({ value }) => getGradeValue(value));
+  const mean =
+    gradesValues.reduce((prev, curr) => prev + curr, 0) / gradesValues.length;
+  return mean;
 };
 
 export enum LetterGrade {
@@ -76,12 +65,12 @@ export enum LetterGrade {
 
 export const calculateGradeAverage = (standards: StandardWithGrades[]) => {
   const averages = standards
-    .map(standard => summativeAverage(standard.summativeGrades))
+    .map(({ summativeGrades }) => summativeAverage(summativeGrades))
     .filter((avg): avg is number => avg !== null);
 
   if (averages.length === 0) return null;
 
-  return averages.reduce((a, b) => a + b) / averages.length;
+  return averages.reduce((a, b) => a + b, 0) / averages.length;
 };
 
 export const calculateLetterGrade = (standards: StandardWithGrades[]) => {
@@ -95,16 +84,16 @@ export const calculateLetterGrade = (standards: StandardWithGrades[]) => {
 };
 
 export const gradeCutoffs = [
-  { cutoff: 96.5, grade: LetterGrade.APlus },
-  { cutoff: 92.5, grade: LetterGrade.A },
-  { cutoff: 89.5, grade: LetterGrade.AMinus },
-  { cutoff: 86.5, grade: LetterGrade.BPlus },
-  { cutoff: 82.5, grade: LetterGrade.B },
-  { cutoff: 79.5, grade: LetterGrade.BMinus },
-  { cutoff: 76.5, grade: LetterGrade.CPlus },
-  { cutoff: 72.5, grade: LetterGrade.C },
-  { cutoff: 69.5, grade: LetterGrade.CMinus },
-  { cutoff: 66.5, grade: LetterGrade.DPlus },
-  { cutoff: 64.5, grade: LetterGrade.D },
+  { cutoff: 95.5, grade: LetterGrade.APlus },
+  { cutoff: 91.9, grade: LetterGrade.A },
+  { cutoff: 88.3, grade: LetterGrade.AMinus },
+  { cutoff: 82.2, grade: LetterGrade.BPlus },
+  { cutoff: 78.6, grade: LetterGrade.B },
+  { cutoff: 77.5, grade: LetterGrade.BMinus },
+  { cutoff: 75.4, grade: LetterGrade.CPlus },
+  { cutoff: 72.3, grade: LetterGrade.C },
+  { cutoff: 69.2, grade: LetterGrade.CMinus },
+  { cutoff: 67.1, grade: LetterGrade.DPlus },
+  { cutoff: 65, grade: LetterGrade.D },
   { cutoff: 0, grade: LetterGrade.F },
 ];
