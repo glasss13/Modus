@@ -1,8 +1,25 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import { trpc } from "../utils/trpc";
 import ClassCard from "../components/classCard";
 import CreateClass from "../components/createClass";
 import { Button } from "react-daisyui";
+import { getServerAuthSession } from "../server/common/get-server-auth-session";
+
+export const getServerSideProps: GetServerSideProps = async ctx => {
+  const session = await getServerAuthSession(ctx);
+
+  if (session?.user == null)
+    return {
+      redirect: {
+        destination: "/signIn",
+        permanent: false,
+      },
+    };
+
+  return {
+    props: {},
+  };
+};
 
 const Home: NextPage = () => {
   const { data: classes, error, isError } = trpc.useQuery(["class.getClasses"]);

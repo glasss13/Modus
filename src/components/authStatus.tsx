@@ -1,15 +1,13 @@
 import { useState } from "react";
 import Image from "next/image";
-import { Button, Collapse } from "react-daisyui";
+import { Collapse } from "react-daisyui";
 import { BiLogOut as LogOutIcon } from "react-icons/bi";
-import { signIn, useSession, signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
 const AuthStatus = () => {
   const [drop, setDrop] = useState(false);
   const { data: session, status } = useSession();
-  const router = useRouter();
 
   return (
     <>
@@ -27,6 +25,13 @@ const AuthStatus = () => {
               height={32}
               alt=""
             />
+            {/* <Image
+              className="rounded-full"
+              src="https://pbs.twimg.com/media/EJ60F1aX0AAYiAb.jpg"
+              width={32}
+              height={32}
+              alt=""
+            /> */}
             <p className="hidden md:block">{session.user?.name}</p>
           </Collapse.Title>
           <Collapse.Content className="bg-base-100 pl-1">
@@ -35,10 +40,8 @@ const AuthStatus = () => {
                 className="flex cursor-pointer items-center gap-2 text-red-600"
                 onClick={async () => {
                   await signOut({
-                    redirect: false,
                     callbackUrl: "/",
                   });
-                  router.push("/");
                 }}>
                 <LogOutIcon className="text-3xl" />
 
@@ -47,13 +50,7 @@ const AuthStatus = () => {
             </Link>
           </Collapse.Content>
         </Collapse>
-      ) : (
-        <Button
-          className="absolute right-6 top-3 rounded-lg bg-gray-600 bg-opacity-40"
-          onClick={() => signIn("google")}>
-          sign in
-        </Button>
-      )}
+      ) : null}
     </>
   );
 };
