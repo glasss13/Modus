@@ -7,29 +7,7 @@ import ClassCard from "../components/classCard";
 import CreateClass from "../components/createClass";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import { prisma } from "../server/db/client";
-import { Prisma } from "@prisma/client";
-
-const fullClass = Prisma.validator<Prisma.ClassInclude>()({
-  standards: {
-    include: {
-      summativeGrades: true,
-    },
-  },
-  assignments: {
-    include: {
-      grades: {
-        include: {
-          standard: true,
-        },
-      },
-      class: {
-        include: {
-          standards: true,
-        },
-      },
-    },
-  },
-});
+import { fullClass } from "../server/router/class";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);

@@ -2,7 +2,7 @@ import { createProtectedRouter } from "./context";
 import { z } from "zod";
 import { SummativeGradeValue, Prisma } from "@prisma/client";
 
-const fullClass = Prisma.validator<Prisma.ClassInclude>()({
+export const fullClass = Prisma.validator<Prisma.ClassInclude>()({
   standards: {
     include: {
       summativeGrades: true,
