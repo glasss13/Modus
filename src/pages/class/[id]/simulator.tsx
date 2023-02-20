@@ -5,7 +5,7 @@ import { BiAbacus as SimulateIcon } from "react-icons/bi";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { inferQueryOutput, trpc } from "../../../utils/trpc";
-import { Breadcrumbs, Button, Divider, Link, Table } from "react-daisyui";
+import { Breadcrumbs, Button, Divider, Link } from "react-daisyui";
 import {
   calculateGradeAverage,
   calculateLetterGrade,
@@ -88,6 +88,7 @@ const calculateGradePossibilitiesHelper = (
       const foundIdx = classStandards.findIndex(
         std => std.id === grade.standardId,
       );
+
       if (foundIdx !== -1) {
         classStandards[foundIdx]!.summativeGrades.push({
           id: "",
@@ -345,86 +346,91 @@ const SimulatorPageContent: React.FC<{ id: string }> = ({ id }) => {
       </div>
 
       <div className="flex">
-        <div className="flex flex-col">
-          <h2 className="font-bold">Assessed Standards</h2>
-          {assessedStandards.map((std, idx) => (
-            <div
-              key={std.standardId ?? idx}
-              className="mt-4 flex items-center gap-2 first:mt-0">
-              <Button
-                onClick={() => removeAssessed(idx)}
-                shape="circle"
-                color="error"
-                size="xs"
-                variant="outline">
-                -
-              </Button>
-              <select
-                className="select select-bordered"
-                value={std.name ?? ""}
-                onChange={e => onChangeSelected(e, idx)}>
-                <option value="" disabled>
-                  --
-                </option>
-                {class_.standards
-                  .filter(
-                    std =>
-                      assessedStandards[idx]?.standardId === std.id ||
-                      assessedStandards.findIndex(
-                        it => it.standardId === std.id,
-                      ) === -1,
-                  )
-                  .map(std => (
-                    <option key={std.id} value={std.name}>
-                      {std.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          ))}
-
-          <Button
-            startIcon={<PlusIcon className="text-2xl" />}
-            className="mt-6 gap-2 rounded-md pl-2"
-            disabled={assessedStandards.length >= class_.standards.length}
-            onClick={() => setAssessedStandards(values => [...values, {}])}>
-            select standard
-          </Button>
-        </div>
-        <div className="flex flex-col">
-          <div className="overflow-x-auto">
-            <div className="table w-full">
-              <thead>
-                <tr>
-                  {assessedStandards.map((std, idx) => (
-                    <th key={idx}>{std.name ?? "test"}</th>
-                  ))}
-                  <th>Score</th>
-                  <th>Grade</th>
-                </tr>
-              </thead>
-              <tbody>
-                {possibleGrades ? (
-                  possibleGrades.map((possibleGrade, idx) => (
-                    <tr key={idx}>
-                      {possibleGrade.grades.map(grade => (
-                        <th key={grade.standardId}>
-                          {valueFromNumber(grade.value)}
-                        </th>
-                      ))}
-                      <th>{possibleGrade.score.toFixed(2)}</th>
-                      <th>{possibleGrade.letterGrade}</th>
-                    </tr>
-                  ))
-                ) : (
+        <div className="mx-auto flex flex-col">
+          {/* <div className="max-h-screen overflow-auto"> */}
+          <table className="table w-full">
+            <tr>
+              <td>
+                <table className="table w-full">
                   <tr>
-                    <th>Not good</th>
-                    <th>Not good</th>
+                    <th>
+                      <Button
+                        size="sm"
+                        startIcon={<PlusIcon className="text-2xl" />}
+                        disabled={
+                          assessedStandards.length >= class_.standards.length
+                        }
+                        onClick={() =>
+                          setAssessedStandards(values => [...values, {}])
+                        }
+                      />
+                    </th>
+                    {assessedStandards.map((std, idx) => (
+                      <th key={idx}>
+                        <div className="flex flex-col items-center gap-2">
+                          <Button
+                            onClick={() => removeAssessed(idx)}
+                            shape="circle"
+                            color="error"
+                            size="xs"
+                            variant="outline">
+                            -
+                          </Button>
+                          <select
+                            className="select select-bordered"
+                            value={std.name ?? ""}
+                            onChange={e => onChangeSelected(e, idx)}>
+                            <option value="" disabled>
+                              --
+                            </option>
+                            {class_.standards
+                              .filter(
+                                std =>
+                                  assessedStandards[idx]?.standardId ===
+                                    std.id ||
+                                  assessedStandards.findIndex(
+                                    it => it.standardId === std.id,
+                                  ) === -1,
+                              )
+                              .map(std => (
+                                <option key={std.id} value={std.name}>
+                                  {std.name}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                      </th>
+                    ))}
+                    <th>Score</th>
+                    <th>Grade</th>
                   </tr>
-                )}
-              </tbody>
-            </div>
-          </div>
+                </table>
+              </td>
+            </tr>
+
+            <td>
+              <div className="max-h-screen overflow-auto">
+                <table className="table w-full">
+                  {possibleGrades ? (
+                    possibleGrades.map((possibleGrade, idx) => (
+                      <tr key={idx}>
+                        <th />
+                        {possibleGrade.grades.map(grade => (
+                          <th key={grade.standardId}>
+                            {valueFromNumber(grade.value)}
+                          </th>
+                        ))}
+                        <th>{possibleGrade.score.toFixed(2)}</th>
+                        <th>{possibleGrade.letterGrade}</th>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr></tr>
+                  )}
+                </table>
+              </div>
+            </td>
+          </table>
         </div>
       </div>
     </main>
