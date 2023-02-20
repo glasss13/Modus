@@ -1,11 +1,37 @@
-import type { GetServerSideProps, NextPage } from "next";
-import { trpc } from "../utils/trpc";
+import type {
+  GetServerSidePropsContext,
+  InferGetServerSidePropsType,
+  NextPage,
+} from "next";
 import ClassCard from "../components/classCard";
 import CreateClass from "../components/createClass";
-import { Button } from "react-daisyui";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
+import { prisma } from "../server/db/client";
+import { Prisma } from "@prisma/client";
 
-export const getServerSideProps: GetServerSideProps = async ctx => {
+const fullClass = Prisma.validator<Prisma.ClassInclude>()({
+  standards: {
+    include: {
+      summativeGrades: true,
+    },
+  },
+  assignments: {
+    include: {
+      grades: {
+        include: {
+          standard: true,
+        },
+      },
+      class: {
+        include: {
+          standards: true,
+        },
+      },
+    },
+  },
+});
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getServerAuthSession(ctx);
 
   if (session?.user == null)
@@ -14,16 +40,24 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
         destination: "/signIn",
         permanent: false,
       },
+      props: { classes: [] },
     };
 
+  const classes = await prisma.class.findMany({
+    where: {
+      userId: session.user.id,
+    },
+    include: fullClass,
+  });
+
   return {
-    props: {},
+    props: { classes },
   };
 };
 
-const Home: NextPage = () => {
-  const { data: classes, error, isError } = trpc.useQuery(["class.getClasses"]);
-
+const Home: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = ({ classes }) => {
   return (
     <>
       <h1 className="text-center text-5xl font-extrabold leading-normal md:text-[5rem]">
@@ -31,18 +65,14 @@ const Home: NextPage = () => {
       </h1>
       <main className="container mx-auto flex min-h-screen w-2/3 flex-col p-1  ">
         {/* {isError && error.data?.code === "UNAUTHORIZED" ? } */}
-        {classes ? (
-          classes.map(class_ => (
-            <ClassCard
-              key={class_.id}
-              id={class_.id}
-              name={class_.name}
-              standards={class_.standards}
-            />
-          ))
-        ) : (
-          <Button size="lg" color="ghost" loading />
-        )}
+        {classes.map(class_ => (
+          <ClassCard
+            key={class_.id}
+            id={class_.id}
+            name={class_.name}
+            standards={class_.standards}
+          />
+        ))}
         <CreateClass />
       </main>
     </>
