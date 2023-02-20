@@ -17,4 +17,4 @@ Modus follows the T3-Stack and was bootstrapped with [Create-T3-App](https://cre
 
 # Running locally
 
-There must be a MySQL server running on port 3306 as described the [schema](prisma/schema.prisma). Then simply run `npm run dev` and the site will be running locally at [localhost:3000](http://localhost:3000).
+There must be a MySQL server running on port 3306 as described the [schema](prisma/schema.prisma). Then simply run `yarn && yarn dev` and the site will be running locally at [localhost:3000](http://localhost:3000).
