@@ -16,9 +16,7 @@ import StandardsChart from "../../../components/standardsChart";
 import Modal from "../../../components/modal";
 import { useState } from "react";
 import EditClassDialog from "../../../components/editClassDialog";
-import { prisma } from "../../../server/db/client";
 import { getServerAuthSession } from "../../../server/common/get-server-auth-session";
-import { fullClass } from "../../../server/router/class";
 import Head from "next/head";
 
 const LetterGradeSpan: React.FC<{ grade: LetterGrade }> = ({ grade }) => {
@@ -43,26 +41,12 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const id = ctx.params?.id;
   if (typeof id !== "string") return { notFound: true, props: {} };
 
-  const class_ = await prisma.class.findUnique({
-    where: {
-      id_userId: {
-        id,
-        userId: session.user.id,
-      },
-    },
-    include: fullClass,
-  });
-
-  if (class_ == null) return { notFound: true, props: {} };
-
   return {
-    props: { class_ },
+    props: {},
   };
 };
 
-const ClassPage: NextPage<
-  InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ class_ }) => {
+function ClassPageContent({ id }: { id: string }) {
   const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
   const context = trpc.useContext();
@@ -71,11 +55,11 @@ const ClassPage: NextPage<
       context.invalidateQueries();
     },
   });
+  const { data: class_ } = trpc.useQuery(["class.byId", { id }]);
 
   const router = useRouter();
 
-  // This won't ever be the case but typescript is being annoying
-  if (class_ == null) return null;
+  if (class_ == null) return <Button size="lg" color="ghost" loading />;
 
   const letterGrade = calculateLetterGrade(class_.standards);
   return (
@@ -193,6 +177,15 @@ const ClassPage: NextPage<
       </main>
     </>
   );
-};
+}
 
-export default ClassPage;
+export default function ClassPage() {
+  const router = useRouter();
+  const { id } = router.query;
+
+  if (typeof id !== "string") {
+    return <h1>Not good</h1>;
+  }
+
+  return <ClassPageContent id={id} />;
+}
